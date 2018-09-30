@@ -24,7 +24,8 @@ timeout(1000)
 	(v) => {
 		console.log('rejected with: ' + v);
 		return timeout(2000);
-	})
+	}
+	)
 .then(
 	(v) => {
 		console.log('resolved with: ' + v);
@@ -32,11 +33,13 @@ timeout(1000)
 	}, 
 	(v) => {
 		console.log('rejected with: ' + v);
-	})
-.catch((err) => {
-	console.log(err);
-}
-)
+	}
+	)
+.catch(
+	(err) => {
+		console.log(err);
+	}
+	)
 
 
 
