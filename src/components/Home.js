@@ -1,19 +1,16 @@
 import React from 'react';
 
-import { Tabs, Button, Spin } from 'antd';
-import {GEO_OPTIONS } from '../Constant';
-import {POS_KEY } from '../Constant';
+import { Tabs, Spin } from 'antd';
+import {GEO_OPTIONS, POS_KEY, API_ROOT, AUTH_PREFIX, TOKEN_KEY} from '../Constant';
 import {Gallery} from './Gallery';
 import $ from 'jquery';
+
+import {CreatePostButton} from './CreatePostButton';
 
   //optional stuff to do after success
 
 
-
 const TabPane = Tabs.TabPane;
-
-const operations = <Button>Mistery Button</Button>;
-
 
 
 export class Home extends React.Component {
@@ -64,20 +61,52 @@ export class Home extends React.Component {
 			return <Spin tip="loading Geolocation..." />
 		} else if (this.state.loadingPosts) {
 			return <Spin tip="loading Posts..." />
+		} else if (this.state.posts && this.state.posts.length > 0){
+			return <Gallery images={
+				this.state.posts.map(({ user, message, url}) => ({
+					user: user,
+					src: url,
+					thumbnail: url,
+					caption: message,
+					thumbnailWidth: 400,
+					thumbnailHeight: 300,
+				}))
+			} />;
 		} else {
-			return <Gallery images={imageList} />;
+			return null;
 		}
 	}
 
 	loadNearbyPosts = () => {
+		this.setState({ loadingPosts: true});
+		const {latitude, longitude} = JSON.parse(localStorage.getItem(POS_KEY))
+		const token = localStorage.getItem(TOKEN_KEY)
+
+		$.ajax({
+			url: `${API_ROOT}/search?lat=${latitude}&lon=${longitude}&range=2000`,
+			headers: {
+				Authorization: `${AUTH_PREFIX} ${token}`
+			},
+		}).then(
+			(response) => {
+				this.setState({posts: response,loadingPosts: false});
+				console.log(response);
+			},
+			(response) => {
+				this.setSate({error: response.responseText})
+			}
+		).catch(
+		   (error) => console.log(error)
+		);
 
 	}
 
 
 
 	render () {
+		const createPostButton = <CreatePostButton />;
 		return (
-			<Tabs tabBarExtraContent={operations} className="main-tabs">
+			<Tabs tabBarExtraContent={createPostButton} className="main-tabs">
 			<TabPane tab="Post" key="1">Content of tab 1
 			{this.getGalleryPanelContent()}
 			</TabPane>
@@ -87,49 +116,3 @@ export class Home extends React.Component {
 	}
 }
 
-
-
-const imageList = [
-
-{
-	user: 'Dafei Ning',
-	src: "https://c7.staticflickr.com/9/8106/28941228886_86d1450016_b.jpg",
-	thumbnail: "https://c7.staticflickr.com/9/8106/28941228886_86d1450016_n.jpg",
-	thumbnailWidth: 271,
-	thumbnailHeight: 320,
-	caption: "Orange Macro (Tom Eversley - isorepublic.com)"
-},
-{
-	user: 'Dafei Ning',
-	src: "https://c3.staticflickr.com/9/8583/28354353794_9f2d08d8c0_b.jpg",
-	thumbnail: "https://c3.staticflickr.com/9/8583/28354353794_9f2d08d8c0_n.jpg",
-	thumbnailWidth: 320,
-	thumbnailHeight: 190,
-
-	caption: "286H (gratisography.com)"
-},
-{
-	user: 'Dafei Ning',
-	src: "https://c7.staticflickr.com/9/8569/28941134686_d57273d933_b.jpg",
-	thumbnail: "https://c7.staticflickr.com/9/8569/28941134686_d57273d933_n.jpg",
-	thumbnailWidth: 320,
-	thumbnailHeight: 148,
-	caption: "315H (gratisography.com)"
-},
-{
-	user: 'Dafei Ning',
-	src: "https://c6.staticflickr.com/9/8342/28897193381_800db6419e_b.jpg",
-	thumbnail: "https://c6.staticflickr.com/9/8342/28897193381_800db6419e_n.jpg",
-	thumbnailWidth: 320,
-	thumbnailHeight: 213,
-	caption: "201H (gratisography.com)"
-},
-{
-	user: 'Dafei Ning',
-	src: "https://c2.staticflickr.com/9/8239/28897202241_1497bec71a_b.jpg",
-	thumbnail: "https://c2.staticflickr.com/9/8239/28897202241_1497bec71a_n.jpg",
-	thumbnailWidth: 248,
-	thumbnailHeight: 320,
-	caption: "Big Ben (Tom Eversley - isorepublic.com)"
-}
-];
