@@ -4,6 +4,11 @@ import { Tabs, Button, Spin } from 'antd';
 import {GEO_OPTIONS } from '../Constant';
 import {POS_KEY } from '../Constant';
 import {Gallery} from './Gallery';
+import $ from 'jquery';
+
+  //optional stuff to do after success
+
+
 
 const TabPane = Tabs.TabPane;
 
@@ -15,6 +20,8 @@ export class Home extends React.Component {
 
 	state = {
 		loadingGeoLocation: false,
+		loadingPosts: false,
+		posts: [],
 		error: '',
 	}
 
@@ -40,7 +47,9 @@ export class Home extends React.Component {
 		console.log(position);
 		const { latitude, longitude } = position.coords;
 		localStorage.setItem(POS_KEY, JSON.stringify({latitude, longitude}));
-		this.setState({ loadingGeoLocation: false, error: '' });
+		this.setState({ loadingPosts: true, loadingGeoLocation: false, error: '' });
+
+		this.loadNearbyPosts();
 	}
 
 	onFailedLoadGeolocation = (error) => {
@@ -52,10 +61,16 @@ export class Home extends React.Component {
 		if (this.state.error) {
 			return <div>{this.state.error}</div>;
 		} else if (this.state.loadingGeoLocation) {
-			return <Spin tip="loading..." />
+			return <Spin tip="loading Geolocation..." />
+		} else if (this.state.loadingPosts) {
+			return <Spin tip="loading Posts..." />
 		} else {
 			return <Gallery images={imageList} />;
 		}
+	}
+
+	loadNearbyPosts = () => {
+
 	}
 
 
