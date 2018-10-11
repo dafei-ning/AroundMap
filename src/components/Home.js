@@ -6,6 +6,7 @@ import {Gallery} from './Gallery';
 import $ from 'jquery';
 
 import {CreatePostButton} from './CreatePostButton';
+import { WrappedAroundMap } from './AroundMap';
 
   //optional stuff to do after success
 
@@ -107,10 +108,22 @@ export class Home extends React.Component {
 		const createPostButton = <CreatePostButton loadNearbyPosts ={this.loadNearbyPosts}/>;
 		return (
 			<Tabs tabBarExtraContent={createPostButton} className="main-tabs">
-			<TabPane tab="Post" key="1">Content of tab 1
+			<TabPane tab="Post" key="1">
 			{this.getGalleryPanelContent()}
 			</TabPane>
-			<TabPane tab="Map" key="2">Content of tab 2</TabPane>
+			<TabPane tab="Map" key="2">
+			<WrappedAroundMap
+             googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD3CEh9DXuyjozqptVB5LA-dN7MxWWkr9s&v=3.exp&libraries=geometry,drawing,places"
+             loadingElement={<div style={{ height: `100%` }} />}
+             containerElement={<div style={{ height: `600px` }} />}
+             mapElement={<div style={{ height: `100%` }} />}
+             posts={this.state.posts}
+             loadNearbyPosts={this.loadNearbyPosts}
+           />
+
+
+
+			</TabPane>
 			</Tabs>
 			);
 	}
